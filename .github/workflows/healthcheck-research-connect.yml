@@ -1,0 +1,24 @@
+name: Health Check on Research Connect
+on:
+  schedule:
+    - cron: '0/10 * * * *'
+  push:
+    branches:
+      - master
+  pull_request:
+    paths:
+      - .github/workflows/healthcheck-research-connect.yml
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Set up Node 10
+        uses: actions/setup-node@master
+        with:
+          node-version: 10.x
+      - name: Yarn Install
+        run: yarn install
+      - name: Health Check
+        run: yarn health-check https://www.research-connect.com/

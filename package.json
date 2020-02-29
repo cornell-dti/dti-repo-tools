@@ -1,0 +1,20 @@
+{
+  "name": "dti-repo-tools",
+  "version": "0.1.0",
+  "description": "Repository tools for Cornell DTI",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "tsc": "tsc --noEmit true",
+    "health-check": "ts-node src/health-check.ts"
+  },
+  "dependencies": {
+    "node-fetch": "^2.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^13.7.7",
+    "@types/node-fetch": "^2.5.5",
+    "ts-node": "^8.6.2",
+    "typescript": "^3.8.3"
+  }
+}
