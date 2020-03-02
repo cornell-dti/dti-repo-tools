@@ -4,7 +4,6 @@ on: push
 jobs:
   check:
     runs-on: ubuntu-latest
-    name: Check
     steps:
       - uses: actions/checkout@master
       - name: Yarn Install
