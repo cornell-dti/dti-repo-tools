@@ -1,13 +1,13 @@
 name: Health Check on Course Plan
 on:
   schedule:
-    - cron: '0/30 * * * *'
+    - cron: '0/10 * * * *'
   push:
     branches:
       - master
   pull_request:
     paths:
-      - .github/workflows/healthcheck-course-plan
+      - .github/workflows/healthcheck-course-plan.yml
 
 jobs:
   check:
