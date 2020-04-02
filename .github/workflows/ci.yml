@@ -10,3 +10,13 @@ jobs:
         run: yarn
       - name: Type Check
         run: yarn tsc
+      - name: Compile
+        run: yarn compile
+      - name: Ensure compiled/index.js is in sync with sources
+        run: |
+          if [[ `git status --porcelain` ]]; then
+            echo "Please run yarn compile before commit."
+            exit 1
+          else
+            echo "Things are in sync!"
+          fi

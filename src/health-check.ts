@@ -1,27 +1,39 @@
 import fetch from 'node-fetch';
+import * as core from '@actions/core';
 
-const healthCheck = (url: string): Promise<boolean> =>
+const healthCheckSingleEndpoint = (
+  url: string,
+  retriesLeft: number
+): Promise<readonly [string, boolean]> =>
   fetch(url)
     .then(response => {
       const status = response.status;
-      console.log(`Status of ${url} is ${status}.`);
-      return status === 200;
+      core.info(`Status of ${url} is ${status}.`);
+      return [url, status === 200] as const;
     })
     .catch(error => {
-      console.error(`Failed to fetch ${url}.`);
-      console.error(`Error: ${error}`);
-      return false;
+      if (retriesLeft === 0) {
+        core.error(`Failed to fetch ${url}.`);
+        core.error(`Error: ${error}`);
+        return [url, false] as const;
+      }
+      return healthCheckSingleEndpoint(url, retriesLeft - 1);
     });
 
-const url = process.argv[2];
+const endPoints = [
+  'https://courseplan.io/',
+  'https://www.cureviews.org/',
+  'https://queueme.in/',
+  'https://www.research-connect.com/',
+  'https://samwise.today/'
+];
 
-if (!url) {
-  console.log('URL is not passed in as the first argument of the program.');
-  process.exit(1);
-}
+const RETRIES = 3;
 
-healthCheck(url).then(passed => {
-  if (!passed) {
-    process.exit(1);
+export default async (): Promise<void> => {
+  const results = await Promise.all(endPoints.map(url => healthCheckSingleEndpoint(url, RETRIES)));
+  const failedEndpoints = results.filter(([, result]) => !result).map(([url]) => url);
+  if (failedEndpoints.length > 0) {
+    core.setFailed(`We failed to fetch ${failedEndpoints.join(', ')} with exit code 200.`);
   }
-});
+};

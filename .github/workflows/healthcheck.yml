@@ -7,14 +7,14 @@ on:
       - master
   pull_request:
     paths:
-      - .github/workflows/healthcheck-course-plan.yml
+      - .github/workflows/healthcheck.yml
 
 jobs:
   check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
-      - name: Yarn Install
-        run: yarn install
-      - name: Health Check
-        run: yarn health-check https://courseplan.io/
+      - name: Run Health Check
+        uses: ./
+        with:
+          command: health-check
