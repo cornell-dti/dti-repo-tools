@@ -1,4 +1,4 @@
-name: Health Check on Course Plan
+name: Health Check
 on:
   schedule:
     - cron: '0/10 * * * *'
@@ -16,5 +16,8 @@ jobs:
       - uses: actions/checkout@master
       - name: Run Health Check
         uses: ./
+        env:
+          SLACK_CHANNEL: ${{ secrets.SLACK_CHANNEL }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
         with:
           command: health-check
