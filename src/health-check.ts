@@ -29,11 +29,23 @@ const endPoints = [
 ];
 
 const RETRIES = 3;
+const SLACK_CHANNEL = process.env.SLACK_CHANNEL;
 
 export default async (): Promise<void> => {
   const results = await Promise.all(endPoints.map(url => healthCheckSingleEndpoint(url, RETRIES)));
   const failedEndpoints = results.filter(([, result]) => !result).map(([url]) => url);
-  if (failedEndpoints.length > 0) {
-    core.setFailed(`We failed to fetch ${failedEndpoints.join(', ')} with exit code 200.`);
+  if (failedEndpoints.length === 0) {
+    return;
   }
+  const message = `We failed to fetch ${failedEndpoints.join(', ')} with exit code 200.`;
+  const slackbotSendResult = await fetch('https://slack.com/api/chat.postMessage', {
+    method: 'POST',
+    headers: {
+      'Content-type': 'application/json',
+      Authorization: `Bearer ${process.env.SLACK_BOT_TOKEN}`
+    },
+    body: JSON.stringify({ channel: SLACK_CHANNEL, text: message })
+  });
+  console.info(await slackbotSendResult.json());
+  core.setFailed(message);
 };
