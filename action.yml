@@ -1,0 +1,9 @@
+name: 'dti-repo-tools'
+description: 'Repository Management and Maintainence Tools for Cornell DTI'
+runs:
+  using: 'node12'
+  main: 'compiled/index.js'
+inputs:
+  command:
+    description: 'The command to run'
+    required: true
