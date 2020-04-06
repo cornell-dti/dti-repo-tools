@@ -9,3 +9,4 @@ A monorepo for all the tools that help manage and monitor all of our repos.
 ## Current Features
 
 - Health Checks
+- Stale Branches Detection
