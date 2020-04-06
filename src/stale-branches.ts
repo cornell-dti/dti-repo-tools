@@ -6,29 +6,38 @@ type GitHubBranchInformation = {
   readonly protected: boolean;
 };
 
+type GitUserInformation = {
+  readonly name: string;
+  readonly email: string;
+  readonly date: string;
+};
+
 type GitHubCommitInformation = {
   readonly commit: {
-    readonly committer: {
-      readonly name: string;
-      readonly email: string;
-      readonly date: string;
-    };
+    readonly committer: GitUserInformation;
   };
 };
 
 type StaleBranchInformation = { readonly name: string; readonly lastUpdatedTime: Date };
 
+const fetchJson = async (url: string): Promise<any> => {
+  const response = await fetch(url, {
+    headers: { Authorization: `token ${process.env.GITHUB_TOKEN}` },
+  });
+  return await response.json();
+};
+
 const getStaleBranches = async (repository: string): Promise<readonly StaleBranchInformation[]> => {
-  const branchList: readonly GitHubBranchInformation[] = await (
-    await fetch(`https://api.github.com/repos/cornell-dti/${repository}/branches`)
-  ).json();
+  const branchList: readonly GitHubBranchInformation[] = await fetchJson(
+    `https://api.github.com/repos/cornell-dti/${repository}/branches`
+  );
   const allBranchInformation = await Promise.all(
     branchList
       .filter((branch) => !branch.protected)
       .map(async (branch) => {
-        const branchLastCommitInformation: GitHubCommitInformation = await (
-          await fetch(branch.commit.url)
-        ).json();
+        const branchLastCommitInformation: GitHubCommitInformation = await fetchJson(
+          branch.commit.url
+        );
         const lastUpdatedTime = new Date(branchLastCommitInformation.commit.committer.date);
         return { name: branch.name, lastUpdatedTime };
       })
@@ -38,7 +47,24 @@ const getStaleBranches = async (repository: string): Promise<readonly StaleBranc
   return allBranchInformation.filter(({ lastUpdatedTime }) => lastUpdatedTime < aMonthAgo);
 };
 
-const repositories = ['office-hours'];
+const repositories = [
+  'campus-density-android',
+  'campus-density-backend',
+  'campus-density-ios',
+  'carriage-driver',
+  'carriage-rider',
+  'carriage-web',
+  'course-plan',
+  'course-reviews-react-2.0',
+  'events-backend-2.0',
+  'events-manager-android',
+  'events-backend',
+  'events-manager-ios',
+  'flux-fitness',
+  'flux-functions',
+  'office-hours',
+  'samwise',
+];
 
 const getAllStaleBranches = async (): Promise<StaleBranchInformation[]> => {
   const allStaleBranches = await Promise.all(
@@ -56,5 +82,7 @@ const getAllStaleBranches = async (): Promise<StaleBranchInformation[]> => {
   return flattenedStaleBranches;
 };
 
-export default (): Promise<void> =>
+const main = (): Promise<void> =>
   getAllStaleBranches().then((branches) => branches.forEach((branch) => console.log(branch)));
+
+export default main;
