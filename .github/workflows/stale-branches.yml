@@ -14,5 +14,7 @@ jobs:
       - uses: actions/checkout@master
       - name: Run Stale Branches Check
         uses: ./
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           command: stale-branches
