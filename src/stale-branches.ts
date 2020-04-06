@@ -79,10 +79,19 @@ const getAllStaleBranches = async (): Promise<StaleBranchInformation[]> => {
   );
   const flattenedStaleBranches: StaleBranchInformation[] = [];
   allStaleBranches.forEach((branches) => flattenedStaleBranches.push(...branches));
+  flattenedStaleBranches.sort((branch1, branch2) => branch1.name.localeCompare(branch2.name));
   return flattenedStaleBranches;
 };
 
+const stringifyStaleBranchInformation = ({
+  name,
+  lastUpdatedTime,
+}: StaleBranchInformation): string =>
+  `Last updated time for ${name} is ${lastUpdatedTime.toLocaleDateString()} ${lastUpdatedTime.toLocaleTimeString()}`;
+
 const main = (): Promise<void> =>
-  getAllStaleBranches().then((branches) => branches.forEach((branch) => console.log(branch)));
+  getAllStaleBranches().then((branches) =>
+    branches.map(stringifyStaleBranchInformation).forEach((line) => console.log(line))
+  );
 
 export default main;
