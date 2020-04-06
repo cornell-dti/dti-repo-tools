@@ -6,8 +6,6 @@ on:
     branches:
       - master
   pull_request:
-    paths:
-      - .github/workflows/healthcheck.yml
 
 jobs:
   check:
