@@ -1,0 +1,17 @@
+name: PR Comment
+on: pull_request
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Get current time
+        run: echo "::set-env name=CURRENT_TIME::$(date +%s)"
+      - name: Run Stale Branches Check
+        uses: ./
+        env:
+          BOT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          command: pr-comment
+          argument: '[example-prefix] Example message: Unix time is ${{ env.CURRENT_TIME }}'
