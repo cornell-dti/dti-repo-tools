@@ -15,7 +15,6 @@ jobs:
       - name: Run Health Check
         uses: ./
         env:
-          SLACK_CHANNEL: ${{ secrets.SLACK_CHANNEL }}
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
         with:
           command: health-check
