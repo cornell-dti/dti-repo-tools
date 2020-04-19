@@ -1,4 +1,5 @@
 import fetch from 'node-fetch';
+import slackbot from './slackbot';
 
 type GitHubBranchInformation = {
   readonly name: string;
@@ -99,8 +100,9 @@ const main = async (): Promise<void> => {
   const branches = await getAllStaleBranches();
   const staleBranchInformationString = branches.map(stringifyStaleBranchInformation).join('\n');
   console.log(staleBranchInformationString);
-  if (shouldPostToSlack()) {
+  if (!shouldPostToSlack()) {
     console.log(`Posting to slack...\n\n${staleBranchInformationString}`);
+    await slackbot(staleBranchInformationString, 'C011XFWG05U'); // #dev-slackbot channel
   }
 };
 

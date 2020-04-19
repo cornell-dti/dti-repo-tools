@@ -10,5 +10,5 @@ export default async (message: string, channel: string): Promise<void> => {
     },
     body: JSON.stringify({ channel, text: message }),
   });
-  core.info(`Sent data: ${await slackbotSendResult.json()}`);
+  core.info(`Sent data: ${JSON.stringify(await slackbotSendResult.json())}`);
 };
