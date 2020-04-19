@@ -114,7 +114,7 @@ const postToSubteamSlackChannel = async (
 
 const main = async (): Promise<void> => {
   const branches = await getAllStaleBranches();
-  if (!shouldPostToProjectSlackChannels()) {
+  if (shouldPostToProjectSlackChannels()) {
     await Promise.all([
       postToSubteamSlackChannel(branches, carriageRepositories, 'carriage-dev'),
       postToSubteamSlackChannel(branches, coursePlanRepositories, 'cp-frontend'),
