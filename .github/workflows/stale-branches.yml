@@ -13,6 +13,8 @@ jobs:
     steps:
       - uses: actions/checkout@master
       - name: Print timezone
+        env:
+          TZ: EDT
         run: date +"%Z %z"
       - name: Run Stale Branches Check
         uses: ./
