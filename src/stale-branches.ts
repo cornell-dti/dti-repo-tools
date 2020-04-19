@@ -1,4 +1,5 @@
 import fetch from 'node-fetch';
+import slackbot from './slackbot';
 
 type GitHubBranchInformation = {
   readonly name: string;
@@ -89,9 +90,21 @@ const stringifyStaleBranchInformation = ({
 }: StaleBranchInformation): string =>
   `Last updated time for ${name} is ${lastUpdatedTime.toLocaleDateString()} ${lastUpdatedTime.toLocaleTimeString()}`;
 
-const main = (): Promise<void> =>
-  getAllStaleBranches().then((branches) =>
-    branches.map(stringifyStaleBranchInformation).forEach((line) => console.log(line))
-  );
+const shouldPostToSlack = (): boolean => {
+  const now = new Date();
+  // Only post at 5PM on Tuesday and Friday
+  return (now.getUTCDay() === 2 || now.getUTCDay() === 5) && now.getUTCHours() === 21;
+};
+
+const main = async (): Promise<void> => {
+  const branches = await getAllStaleBranches();
+  const staleBranchInformationString = branches.map(stringifyStaleBranchInformation).join('\n');
+  console.log(staleBranchInformationString);
+  const slackMessage = `*Stale Branches*\n${staleBranchInformationString}`;
+  await slackbot(slackMessage, 'C011XFWG05U'); // #dev-slackbot channel
+  if (shouldPostToSlack()) {
+    await slackbot(slackMessage, 'C011XFWG05U'); // #dev-slackbot channel
+  }
+};
 
 export default main;
