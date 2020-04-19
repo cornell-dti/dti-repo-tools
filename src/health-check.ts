@@ -2,6 +2,7 @@ import fetch from 'node-fetch';
 import * as core from '@actions/core';
 
 import slackBot from './slackbot';
+import slackChannels from './data/slack-channels';
 
 const healthCheckSingleEndpoint = (
   url: string,
@@ -41,6 +42,6 @@ export default async (): Promise<void> => {
     return;
   }
   const message = `We failed to fetch ${failedEndpoints.join(', ')}.`;
-  await slackBot(message, 'CTU5YPT99'); // #alert channel
+  await slackBot(message, slackChannels.alert);
   core.setFailed(message);
 };

@@ -11,7 +11,7 @@ jobs:
       - name: Run Stale Branches Check
         uses: ./
         env:
-          BOT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
         with:
           command: pr-comment
           argument: '[example-prefix] Example message: Unix time is ${{ env.CURRENT_TIME }}'
