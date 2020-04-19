@@ -89,9 +89,19 @@ const stringifyStaleBranchInformation = ({
 }: StaleBranchInformation): string =>
   `Last updated time for ${name} is ${lastUpdatedTime.toLocaleDateString()} ${lastUpdatedTime.toLocaleTimeString()}`;
 
-const main = (): Promise<void> =>
-  getAllStaleBranches().then((branches) =>
-    branches.map(stringifyStaleBranchInformation).forEach((line) => console.log(line))
-  );
+const shouldPostToSlack = (): boolean => {
+  const now = new Date();
+  console.log(now.getDay(), now.getUTCHours());
+  return (now.getUTCDay() === 2 || now.getUTCDay() === 5) && now.getUTCHours() === 9;
+};
+
+const main = async (): Promise<void> => {
+  const branches = await getAllStaleBranches();
+  const staleBranchInformationString = branches.map(stringifyStaleBranchInformation).join('\n');
+  console.log(staleBranchInformationString);
+  if (shouldPostToSlack()) {
+    console.log(`Posting to slack...\n\n${staleBranchInformationString}`);
+  }
+};
 
 export default main;
