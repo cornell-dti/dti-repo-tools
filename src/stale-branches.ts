@@ -1,5 +1,16 @@
 import fetch from 'node-fetch';
 import slackbot from './slackbot';
+import slackChannels from './data/slack-channels';
+import {
+  carriageRepositories,
+  coursePlanRepositories,
+  cuReviewsRepositories,
+  eveRepositories,
+  fluxRepositories,
+  qmiRepositories,
+  samwiseRepositories,
+  allRepositories,
+} from './data/project-repositories';
 
 type GitHubBranchInformation = {
   readonly name: string;
@@ -48,28 +59,9 @@ const getStaleBranches = async (repository: string): Promise<readonly StaleBranc
   return allBranchInformation.filter(({ lastUpdatedTime }) => lastUpdatedTime < aMonthAgo);
 };
 
-const repositories = [
-  'campus-density-android',
-  'campus-density-backend',
-  'campus-density-ios',
-  'carriage-driver',
-  'carriage-rider',
-  'carriage-web',
-  'course-plan',
-  'course-reviews-react-2.0',
-  'events-backend-2.0',
-  'events-manager-android',
-  'events-backend',
-  'events-manager-ios',
-  'flux-fitness',
-  'flux-functions',
-  'office-hours',
-  'samwise',
-];
-
 const getAllStaleBranches = async (): Promise<StaleBranchInformation[]> => {
   const allStaleBranches = await Promise.all(
-    repositories.map((repository) =>
+    allRepositories.map((repository) =>
       getStaleBranches(repository).then((branches) =>
         branches.map(({ name, lastUpdatedTime }) => ({
           name: `${repository}/${name}`,
@@ -90,20 +82,50 @@ const stringifyStaleBranchInformation = ({
 }: StaleBranchInformation): string =>
   `Last updated time for ${name} is ${lastUpdatedTime.toLocaleDateString()} ${lastUpdatedTime.toLocaleTimeString()}`;
 
-const shouldPostToSlack = (): boolean => {
+const shouldPostToProjectSlackChannels = (): boolean => {
   const now = new Date();
   // Only post at 5PM on Tuesday and Friday
   return (now.getUTCDay() === 2 || now.getUTCDay() === 5) && now.getUTCHours() === 21;
 };
 
+const postToSlack = async (
+  branches: readonly StaleBranchInformation[],
+  channel: keyof typeof slackChannels
+): Promise<void> => {
+  const allStaleBranchesString = branches.map(stringifyStaleBranchInformation).join('\n');
+  const allStaleBranchesInformation = `*Stale Branches*\n${allStaleBranchesString}`;
+  console.log(`Posting to ${channel}:\n${allStaleBranchesInformation}`);
+  await slackbot(allStaleBranchesInformation, slackChannels[channel]);
+};
+
+const postToSubteamSlackChannel = async (
+  branches: readonly StaleBranchInformation[],
+  subteamRepositories: readonly string[],
+  channel: keyof typeof slackChannels
+): Promise<void> => {
+  const filteredBranches = branches.filter(({ name }) =>
+    subteamRepositories.some((repository) => name.includes(repository))
+  );
+  if (filteredBranches.length === 0) {
+    return;
+  }
+  await postToSlack(filteredBranches, channel);
+};
+
 const main = async (): Promise<void> => {
   const branches = await getAllStaleBranches();
-  const staleBranchInformationString = branches.map(stringifyStaleBranchInformation).join('\n');
-  console.log(staleBranchInformationString);
-  const slackMessage = `*Stale Branches*\n${staleBranchInformationString}`;
-  await slackbot(slackMessage, 'C011XFWG05U'); // #dev-slackbot channel
-  if (shouldPostToSlack()) {
-    await slackbot(slackMessage, 'C011XFWG05U'); // #dev-slackbot channel
+  // await postToSlack(branches, 'dev-slackbot');
+  if (shouldPostToProjectSlackChannels()) {
+    await Promise.all([
+      // TODO change branch names
+      postToSubteamSlackChannel(branches, carriageRepositories, 'dev-slackbot'),
+      postToSubteamSlackChannel(branches, coursePlanRepositories, 'dev-slackbot'),
+      postToSubteamSlackChannel(branches, cuReviewsRepositories, 'dev-slackbot'),
+      postToSubteamSlackChannel(branches, eveRepositories, 'dev-slackbot'),
+      postToSubteamSlackChannel(branches, fluxRepositories, 'dev-slackbot'),
+      postToSubteamSlackChannel(branches, qmiRepositories, 'dev-slackbot'),
+      postToSubteamSlackChannel(branches, samwiseRepositories, 'dev-slackbot'),
+    ]);
   }
 };
 
