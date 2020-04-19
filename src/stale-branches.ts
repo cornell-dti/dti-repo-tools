@@ -114,18 +114,18 @@ const postToSubteamSlackChannel = async (
 
 const main = async (): Promise<void> => {
   const branches = await getAllStaleBranches();
-  // await postToSlack(branches, 'dev-slackbot');
-  if (!shouldPostToProjectSlackChannels()) {
+  if (shouldPostToProjectSlackChannels()) {
     await Promise.all([
-      // TODO change branch names
-      postToSubteamSlackChannel(branches, carriageRepositories, 'dev-slackbot'),
-      postToSubteamSlackChannel(branches, coursePlanRepositories, 'dev-slackbot'),
-      postToSubteamSlackChannel(branches, cuReviewsRepositories, 'dev-slackbot'),
-      postToSubteamSlackChannel(branches, eveRepositories, 'dev-slackbot'),
-      postToSubteamSlackChannel(branches, fluxRepositories, 'dev-slackbot'),
-      postToSubteamSlackChannel(branches, qmiRepositories, 'dev-slackbot'),
-      postToSubteamSlackChannel(branches, samwiseRepositories, 'dev-slackbot'),
+      postToSubteamSlackChannel(branches, carriageRepositories, 'carriage-dev'),
+      postToSubteamSlackChannel(branches, coursePlanRepositories, 'cp-frontend'),
+      postToSubteamSlackChannel(branches, cuReviewsRepositories, 'cu-reviews-devs'),
+      postToSubteamSlackChannel(branches, eveRepositories, 'eve-dev'),
+      postToSubteamSlackChannel(branches, fluxRepositories, 'flux-dev'),
+      postToSubteamSlackChannel(branches, qmiRepositories, 'queue-me-in-dev'),
+      postToSubteamSlackChannel(branches, samwiseRepositories, 'samwise-dev'),
     ]);
+  } else {
+    await postToSlack(branches, 'dev-slackbot');
   }
 };
 
