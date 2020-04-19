@@ -12,6 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
+      - name: Print timezone
+        run: date +"%Z %z"
       - name: Run Stale Branches Check
         uses: ./
         env:
