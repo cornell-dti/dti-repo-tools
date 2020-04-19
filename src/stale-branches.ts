@@ -91,8 +91,8 @@ const stringifyStaleBranchInformation = ({
 
 const shouldPostToSlack = (): boolean => {
   const now = new Date();
-  console.log(now.getDay(), now.getUTCHours());
-  return (now.getUTCDay() === 2 || now.getUTCDay() === 5) && now.getUTCHours() === 9;
+  // Only post at 5PM on Tuesday and Friday
+  return (now.getUTCDay() === 2 || now.getUTCDay() === 5) && now.getUTCHours() === 21;
 };
 
 const main = async (): Promise<void> => {
