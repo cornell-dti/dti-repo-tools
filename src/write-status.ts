@@ -18,7 +18,7 @@ export const writePendingOrCompletedStatus = async (
   await octokit.repos.createStatus({
     owner,
     repo,
-    name,
+    context: name,
     sha: commit,
     state: isPending ? 'pending' : 'success',
   });
