@@ -12,11 +12,11 @@ jobs:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
         with:
           command: write-status
-          argument: 'true Pending Status'
+          argument: 'pending Pending Status'
       - name: Write Dummy Successful Status
         uses: ./
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
         with:
           command: write-status
-          argument: 'false Successful Status'
+          argument: 'success Successful Status'
