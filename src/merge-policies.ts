@@ -14,6 +14,7 @@ const getMergeStatus = (): 'success' | 'pending' | 'failure' => {
     case 'master':
       return 'success';
     default:
+      core.warning(`This merge (${baseRef} <- ${headRef}) is interpreted as a pending stacked PR.`);
       return 'pending';
   }
 };
