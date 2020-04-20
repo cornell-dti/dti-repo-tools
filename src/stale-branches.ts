@@ -124,8 +124,6 @@ const main = async (): Promise<void> => {
       postToSubteamSlackChannel(branches, qmiRepositories, 'queue-me-in-dev'),
       postToSubteamSlackChannel(branches, samwiseRepositories, 'samwise-dev'),
     ]);
-  } else {
-    await postToSlack(branches, 'dev-slackbot');
   }
 };
 

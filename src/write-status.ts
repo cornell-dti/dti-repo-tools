@@ -8,10 +8,10 @@ const getOctokit = (githubToken: string): Octokit =>
     userAgent: 'cornell-dti/write-status',
   });
 
-export const writePendingOrCompletedStatus = async (
+export const writeStatus = async (
   githubToken: string,
   name: string,
-  isPending: boolean
+  state: 'pending' | 'success' | 'failure'
 ): Promise<void> => {
   const { owner, repo, commit } = getPullRequest();
   const octokit = getOctokit(githubToken);
@@ -20,7 +20,7 @@ export const writePendingOrCompletedStatus = async (
     repo,
     context: name,
     sha: commit,
-    state: isPending ? 'pending' : 'success',
+    state,
   });
 };
 
@@ -31,8 +31,11 @@ export default async (): Promise<void> => {
     return;
   }
   const splitArguments = core.getInput('argument', { required: true }).trim().split(' ');
-  const statusString = splitArguments[0];
-  const isPending = statusString === 'pending';
+  const status = splitArguments[0];
+  if (status !== 'pending' && status !== 'success' && status !== 'failure') {
+    core.setFailed(`Unsupported status: ${status}`);
+    return;
+  }
   const name = splitArguments.slice(1).join(' ');
-  await writePendingOrCompletedStatus(githubToken, name, isPending);
+  await writeStatus(githubToken, name, status);
 };

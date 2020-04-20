@@ -1,12 +1,14 @@
 import * as core from '@actions/core';
 
 import healthCheck from './health-check';
+import mergePolicies from './merge-policies';
 import prComment from './pr-comment';
 import staleBranches from './stale-branches';
 import writeStatus from './write-status';
 
 const actions: { readonly [command: string]: () => Promise<void> | undefined } = {
   'health-check': healthCheck,
+  'merge-policies': mergePolicies,
   'pr-comment': prComment,
   'stale-branches': staleBranches,
   'write-status': writeStatus,
