@@ -1,0 +1,15 @@
+name: Write Checks
+on: pull_request
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Write Dummy Successful Status
+        uses: ./
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+        with:
+          command: write-status
+          argument: 'success Successful Status'

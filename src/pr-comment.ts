@@ -1,28 +1,8 @@
 import * as core from '@actions/core';
-import * as github from '@actions/github';
 import { Octokit } from '@octokit/rest';
+import getPullRequest from './pull-request';
 
 const USER_LOGIN = 'dti-github-bot';
-
-type PullRequest = {
-  readonly number: number;
-  readonly owner: string;
-  readonly repo: string;
-  readonly authorLogin: string;
-};
-
-const getPullRequest = (): PullRequest => {
-  const pullRequest = github.context.payload.pull_request;
-  if (pullRequest == null) {
-    throw new Error('The action must be used in a PR context!');
-  }
-  return {
-    number: pullRequest.number,
-    owner: pullRequest.head.repo.owner.login,
-    repo: pullRequest.head.repo.name,
-    authorLogin: pullRequest.user.login,
-  };
-};
 
 const getOctokit = (githubToken: string): Octokit =>
   new Octokit({
