@@ -6,13 +6,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
-      - name: Write Dummy Pending Check
-        uses: ./
-        env:
-          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-        with:
-          command: write-status
-          argument: 'pending Pending Status'
       - name: Write Dummy Successful Status
         uses: ./
         env:
