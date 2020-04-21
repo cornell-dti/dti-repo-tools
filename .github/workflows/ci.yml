@@ -8,8 +8,6 @@ jobs:
       - uses: actions/checkout@master
       - name: Yarn Install
         run: yarn
-      - name: Type Check
-        run: yarn tsc
       - name: Compile
         run: yarn compile
       - name: Ensure compiled/index.js is in sync with sources
