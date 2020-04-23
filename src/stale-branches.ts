@@ -88,12 +88,16 @@ const shouldPostToProjectSlackChannels = (): boolean => {
   return (now.getUTCDay() === 2 || now.getUTCDay() === 5) && now.getUTCHours() === 21;
 };
 
+const stringifyStaleBranches = (branches: readonly StaleBranchInformation[]): string => {
+  const allStaleBranchesString = branches.map(stringifyStaleBranchInformation).join('\n');
+  return `*Stale Branches*\n${allStaleBranchesString}`;
+};
+
 const postToSlack = async (
   branches: readonly StaleBranchInformation[],
   channel: keyof typeof slackChannels
 ): Promise<void> => {
-  const allStaleBranchesString = branches.map(stringifyStaleBranchInformation).join('\n');
-  const allStaleBranchesInformation = `*Stale Branches*\n${allStaleBranchesString}`;
+  const allStaleBranchesInformation = stringifyStaleBranches(branches);
   console.log(`Posting to ${channel}:\n${allStaleBranchesInformation}`);
   await slackbot(allStaleBranchesInformation, slackChannels[channel]);
 };
@@ -124,6 +128,8 @@ const main = async (): Promise<void> => {
       postToSubteamSlackChannel(branches, qmiRepositories, 'queue-me-in-dev'),
       postToSubteamSlackChannel(branches, samwiseRepositories, 'samwise-dev'),
     ]);
+  } else {
+    console.log(stringifyStaleBranches(branches));
   }
 };
 
