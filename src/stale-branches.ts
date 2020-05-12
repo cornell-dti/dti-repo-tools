@@ -12,6 +12,8 @@ import {
   allRepositories,
 } from './data/project-repositories';
 
+const SCHEDULED_REMINDER_ENABLED = false;
+
 type GitHubBranchInformation = {
   readonly name: string;
   readonly commit: { readonly sha: string; readonly url: string };
@@ -117,6 +119,10 @@ const postToSubteamSlackChannel = async (
 };
 
 const main = async (): Promise<void> => {
+  if (!SCHEDULED_REMINDER_ENABLED) {
+    console.log('Schedule reminder on stale branches is currently disabled.');
+    return;
+  }
   const branches = await getAllStaleBranches();
   if (shouldPostToProjectSlackChannels()) {
     await Promise.all([
