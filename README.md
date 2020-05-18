@@ -9,4 +9,5 @@ A monorepo for all the tools that help manage and monitor all of our repos.
 ## Current Features
 
 - Health Checks
+- Merge Policy Enforcement
 - Stale Branches Detection
