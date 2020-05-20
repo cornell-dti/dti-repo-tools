@@ -4,7 +4,7 @@ import * as core from '@actions/core';
 import slackBot from './slackbot';
 import slackChannels from './data/slack-channels';
 
-const healthCheckSingleEndpoint = (
+export const healthCheckSingleEndpoint = (
   url: string,
   retriesLeft: number
 ): Promise<readonly [string, boolean]> =>

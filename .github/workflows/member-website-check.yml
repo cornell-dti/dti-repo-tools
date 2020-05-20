@@ -1,0 +1,22 @@
+name: Members Website Check
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Checkout website repo
+        uses: actions/checkout@master
+        repository: 'cornell-dti/nova.cornelldti.org'
+        path: 'website'
+      - name: Run Member Website Health Check
+        uses: ./
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+        with:
+          command: member-website-check
