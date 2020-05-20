@@ -7,8 +7,9 @@ import slackChannels from './data/slack-channels';
 export const healthCheckSingleEndpoint = (
   url: string,
   retriesLeft: number
-): Promise<readonly [string, boolean]> =>
-  fetch(url)
+): Promise<readonly [string, boolean]> => {
+  core.info(`Checking: ${url}`);
+  return fetch(url, { timeout: 10000 })
     .then((response) => {
       const status = response.status;
       core.info(`Status of ${url} is ${status}.`);
@@ -22,6 +23,7 @@ export const healthCheckSingleEndpoint = (
       }
       return healthCheckSingleEndpoint(url, retriesLeft - 1);
     });
+};
 
 const endPoints = [
   'https://courseplan.io/',
