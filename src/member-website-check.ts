@@ -17,7 +17,7 @@ type MemberWithWebsite = Omit<MemberWebsiteStatus, 'passedCheck'>;
 export default async (): Promise<void> => {
   const jsonContents: readonly MemberWithWebsite[] = readdirSync(MEMBER_JSON_PATH)
     .filter((filename) => extname(filename) === '.json')
-    .map((filename) => JSON.parse(readFileSync(join(filename)).toString()));
+    .map((filename) => JSON.parse(readFileSync(join(MEMBER_JSON_PATH, filename)).toString()));
 
   const membersWithWebsite: readonly MemberWithWebsite[] = jsonContents
     .map(({ name, website }) => ({ name, website }))
