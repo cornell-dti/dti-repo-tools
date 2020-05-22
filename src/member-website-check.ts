@@ -46,5 +46,5 @@ export default async (): Promise<void> => {
     return;
   }
   core.error(errorMessage);
-  await slackBot(errorMessage, slackChannels['dev-slackbot']);
+  await slackBot(errorMessage, slackChannels.alert);
 };
