@@ -43,7 +43,7 @@ export default async (): Promise<void> => {
   if (failedEndpoints.length === 0) {
     return;
   }
-  const message = failedEndpoints.map(([url, _, error]) => `We failed to fetch ${url} due to ${error}`).join("\n")
+  const message = failedEndpoints.map(([url, _, error]) => `We failed to fetch ${url} due to ${error}`).join("\n");
   await slackBot(message, slackChannels.alert);
   core.setFailed(message);
 };
