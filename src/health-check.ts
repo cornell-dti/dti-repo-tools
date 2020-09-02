@@ -7,19 +7,19 @@ import slackChannels from './data/slack-channels';
 export const healthCheckSingleEndpoint = (
   url: string,
   retriesLeft: number
-): Promise<readonly [string, boolean]> => {
+): Promise<readonly [string, boolean, Error | undefined]> => {
   core.info(`Checking: ${url}`);
   return fetch(url, { timeout: 10000 })
     .then((response) => {
       const status = response.status;
       core.info(`Status of ${url} is ${status}.`);
-      return [url, status === 200] as const;
+      return [url, status === 200, undefined] as const;
     })
     .catch((error) => {
       if (retriesLeft === 0) {
         core.error(`Failed to fetch ${url}.`);
         core.error(`Error: ${error}`);
-        return [url, false] as const;
+        return [url, false, error] as const;
       }
       return healthCheckSingleEndpoint(url, retriesLeft - 1);
     });
@@ -39,11 +39,11 @@ export default async (): Promise<void> => {
   const results = await Promise.all(
     endPoints.map((url) => healthCheckSingleEndpoint(url, RETRIES))
   );
-  const failedEndpoints = results.filter(([, result]) => !result).map(([url]) => url);
+  const failedEndpoints = results.filter(([, result]) => !result);
   if (failedEndpoints.length === 0) {
     return;
   }
-  const message = `We failed to fetch ${failedEndpoints.join(', ')}.`;
+  const message = failedEndpoints.map(([url, _, error]) => `We failed to fetch ${url} due to ${error}`).join("\n");
   await slackBot(message, slackChannels.alert);
   core.setFailed(message);
 };
